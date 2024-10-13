@@ -17,7 +17,7 @@ import {
     computeAppNullifierSecretKey,
 } from '@aztec/aztec.js';
 import { InclusionProofsContract } from '@aztec/noir-contracts.js';
-import { 
+import {
     getInitialTestAccountsWallets,
     // deployInitialTestAccounts, getDeployedTestAccountsWallets 
 } from '@aztec/accounts/testing';
@@ -58,7 +58,7 @@ if (theRegistry.indexOf(hardcodedGetMembershipWitnessAddr) === -1) {
     console.log('the helper MembershipWitness oracle contract:', receiptGetMembershipWitness.contract.address);
 } else {
     console.log("`hardcodedGetMembershipWitnessAddr` found and will be used");
-    getMembershipWitness = 
+    getMembershipWitness =
         await GetMembershipWitnessContract.at(hardcodedGetMembershipWitnessAddr, wallets[0]);
 }
 if (theRegistry.indexOf(hardcodedContractAddr) === -1) {
@@ -67,7 +67,7 @@ if (theRegistry.indexOf(hardcodedContractAddr) === -1) {
             { contractAddressSalt }
         ).wait();
     // contract = receiptBeforeAll.contract;
-    contract = 
+    contract =
         await InclusionProofsContract.at(receiptBeforeAll.contract.address, wallets[1]);
     // deploymentBlockNumber = receiptBeforeAll.blockNumber!;
     console.log('the `contract`:', contract.address);
@@ -78,7 +78,7 @@ if (theRegistry.indexOf(hardcodedContractAddr) === -1) {
 
 // describe('note inclusion and nullifier non-inclusion', () => {
 // beforeAll(() => {
-const owner_wallet = wallets[1]; 
+const owner_wallet = wallets[1];
 let owner_address: AztecAddress = wallets[1].getAddress(); // #testingWallet
 // let owner: AztecAddress = (await pxe.getRegisteredAccounts())[1].address;
 console.log('note `owner` is set');
@@ -92,8 +92,8 @@ const value = 100n;
 let validNoteBlockNumber: any;
 
 // it('should return the correct values for creating a note', async () => {
-const receipt = await contract.methods.create_note(owner_address, value).send().wait({ 
-    debug: true, waitForNotesSync: true, 
+const receipt = await contract.methods.create_note(owner_address, value).send().wait({
+    debug: true, waitForNotesSync: true,
 });
 noteCreationBlockNumber = receipt.blockNumber!;
 ({ noteHashes, visibleIncomingNotes } = receipt.debugInfo!);
@@ -115,25 +115,25 @@ console.assert(receivedValue.toBigInt() == value, "receivedValue");
 // it('should not throw because the note is included', async () => {
 try {
     await contract.methods
-    .test_note_inclusion(owner_address, true, noteCreationBlockNumber, false).send().wait();
+        .test_note_inclusion(owner_address, true, noteCreationBlockNumber, false).send().wait();
     await contract.methods
-    .test_note_inclusion(owner_address, false, 0n, false).send().wait();
+        .test_note_inclusion(owner_address, false, 0n, false).send().wait();
     console.log("no errors for note inclusion");
-} catch(e) {
+} catch (e) {
     console.assert(false, "error on note inclusion test");
     console.error(e);
 }
 
 const theBlock = await pxe.getBlock(noteCreationBlockNumber);
 const blockHeaderSerd = theBlock?.header.toFields();
-console.debug(blockHeaderSerd?.length);
+// console.debug(blockHeaderSerd?.length);
 console.log(blockHeaderSerd, "blockHeader");
 const theSk = owner_wallet.getSecretKey();
 // const theNSkM = deriveMasterNullifierSecretKey(theSk);
 const theSkM = deriveKeys(theSk);
 // console.debug(theSkM.masterNullifierSecretKey);
 // console.debug(deriveMasterNullifierSecretKey(theSk));
-console.assert(theSkM.masterNullifierSecretKey.toBigInt() == 
+console.assert(theSkM.masterNullifierSecretKey.toBigInt() ==
     deriveMasterNullifierSecretKey(theSk).toBigInt(), "nsk_m derived differently");
 console.log(theSkM.masterNullifierSecretKey.lo, theSkM.masterNullifierSecretKey.hi, "nsk_m");
 const theNSkMHash = theSkM.publicKeys.masterNullifierPublicKey.hash();
@@ -151,7 +151,7 @@ console.log(theSk, "secret key");
 console.debug(noteHashes[0], "noteHashed");
 console.log(await getMembershipWitness.methods.get_the(
     // visibleIncomingNotes[0].note.items, 
-    noteCreationBlockNumber, 
+    noteCreationBlockNumber,
     // [
     //     visibleIncomingNotes[0].contractAddress, 
     //     theUniqueNote.nonce, 
@@ -164,13 +164,13 @@ const NSkApp = computeAppNullifierSecretKey(
 );
 console.log(NSkApp, "NSkApp");
 const theNullifier = poseidon2HashWithSeparator(
-    [noteHashes[0], NSkApp], 
-    53 // *is this correct?* GENERATOR_INDEX__NOTE_NULLIFIER as Field
+    [noteHashes[0], NSkApp],
+    53 // GENERATOR_INDEX__NOTE_NULLIFIER as Field
 );
 console.log(await getMembershipWitness.methods.low_nullifier(
-    noteCreationBlockNumber, 
+    noteCreationBlockNumber,
     theNullifier
-).simulate(), "MembershipWitness");
+).simulate(), "LowNullifierMembershipWitness");
 
 // ~~TODO~~ test nullifying the note with the `nullifier`
 //      ok, I see why this doesn't test anything, but the nullifier seems to be working and I don't have an alternative testing on my mind

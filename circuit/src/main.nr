@@ -25,6 +25,7 @@ use protocol_types::scalar::Scalar;
 
 fn main(
     // TODO looks like it's possible to leave just the root from this #header_root
+    //      it's also #hidingprecise since at least global vars should be included as a `pub`
     blockheader_serd: pub [Field; 24],
     // TODO I guess it's possible to invent a context when sharing `nsk_m` is ok; though it will be narrow
     nsk_m: [Field; 2],
