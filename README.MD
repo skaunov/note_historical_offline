@@ -48,7 +48,16 @@ const theReceipt = await theContract.methods.create_note([...args]).send().wait(
 
 ## an Aztec witness
 
-Here the helper contract (`getMembershipWitness`) comes into play, since PXE has only on-chain API for getting a value.
+Here the helper contract comes into play, since PXE has only on-chain API for getting a value.
+```ts
+import { GetMembershipWitnessContract } from './artifacts/GetMembershipWitness';
+const getMembershipWitness = await GetMembershipWitnessContract.at(
+    await GetMembershipWitnessContract.deploy(wallet)
+        .send({ contractAddressSalt }).wait()
+        .contract.address, 
+    theWallet
+);
+```
 
 This needs the note hashed _for nullifying_ variant. You can compute that or get/save along with the note itself as in the previous section.
 ```ts
