@@ -3,7 +3,7 @@ The circuit takes block number as a point for which assertions are made and bunc
 For proving user needs access to a PXE with their data and the preimage of a note they'd like to use for proving. For verification it's only the exported data of the block is needed, so it could be done *completely without access to the chain* (or even Internet if user can handover the proof).
 
 Coming soon:
-- generalization to accept more notes types,
+- ~~generalization to accept more notes types,~~
 - folding proofs at number of blocks,
 - ...if you have a demand -- add it as an issue.
 
@@ -89,3 +89,6 @@ await getMembershipWitness.methods.low_nullifier(
     )
 ).simulate()
 ```
+
+# generalization
+There's a blocker for making the circuit generic over a note type. `NullifiableNote` leaves with only two choice: `PrivateContext` or `unconstrained`. Current implementation just copy a trait method code in the contrained environment; it seems to me that the root cause is the same reason making the trait to be a boilerplate. (And making up a whole `PrivateContext` in this ciruit is just unreasonable.)
