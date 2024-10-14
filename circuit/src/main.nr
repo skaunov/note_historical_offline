@@ -2,7 +2,7 @@ use dep::protocol_types::{
     header::{Header, HEADER_LENGTH}, address::{AztecAddress},
     utils::{arr_copy_slice, field::{full_field_less_than, full_field_greater_than}},
     merkle_tree::root::root_from_sibling_path,
-    constants::GENERATOR_INDEX__NOTE_NULLIFIER,
+    constants::{GENERATOR_INDEX__NOTE_NULLIFIER, GENERATOR_INDEX__OUTER_NULLIFIER},
     hash::poseidon2_hash_with_separator
 };
 use dep::nft_contract::types::nft_note::NFTNote;
@@ -90,16 +90,19 @@ fn main(
     //     48
     // ), "bad `nsk_app` algorithm");
 
-    let nullifier = poseidon2_hash_with_separator(
-        [
-            note_hashed_for_nullify,
-            poseidon2_hash_with_separator(
-                [nsk_m.hi, nsk_m.lo, contract_address_as_field],
-                48
-            )
-        ], 
-        GENERATOR_INDEX__NOTE_NULLIFIER as Field
-    );
+    let nullifier = poseidon2_hash_with_separator([
+        contract_address_as_field,
+        poseidon2_hash_with_separator(
+            [
+                note_hashed_for_nullify,
+                poseidon2_hash_with_separator(
+                    [nsk_m.hi, nsk_m.lo, contract_address_as_field],
+                    48
+                )
+            ], 
+            GENERATOR_INDEX__NOTE_NULLIFIER as Field
+        )
+    ], GENERATOR_INDEX__OUTER_NULLIFIER);
     // pasta of `prove_nullifier_non_inclusion` from </home/serge/nargo/github.com/AztecProtocol/aztec-packages/aztec-packages-v0.57.0/noir-projects/aztec-nr/aztec/src/history/nullifier_non_inclusion.nr>
     let witness = NullifierMembershipWitness::deserialize(low_nullifier_membership_witness_serd);
     let low_nullifier_leaf = witness.leaf_preimage;
