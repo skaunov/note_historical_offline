@@ -1,5 +1,3 @@
-**Moved to <https://github.com/skaunov/ab2/tree/main/OfflineMembership> and hence archived.**
-
 Here's Noir circuit to prove and verify ownership of a NFT from a paricular collection (i.e. address) on Aztec. \
 The circuit takes block number as a point for which assertions are made and bunch of data required for proving. The proof asserts that the address has a note from the contract and it's not nullified. \
 For proving user needs access to a PXE with their data and the preimage of a note they'd like to use for proving. For verification it's only the exported data of the block is needed, so it could be done *completely without access to the chain* (or even Internet if user can handover the proof).
